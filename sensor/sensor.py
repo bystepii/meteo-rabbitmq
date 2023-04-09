@@ -10,13 +10,13 @@ from typing import Optional
 
 from pika import BlockingConnection
 
+from common.constants import PROCESSING_QUEUE_NAME
 from common.meteo_data import RawMeteoData, RawPollutionData, MeteoEncoder
 from common.meteo_utils import MeteoDataDetector
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_INTERVAL = 1000
-DEFAULT_QUEUE_NAME = 'sensor_data'
 
 
 class SensorType(Enum):
@@ -40,7 +40,7 @@ class Sensor(ABC):
         self._sensor_type = sensor_type
         self._detector = detector
         self._interval = interval or DEFAULT_INTERVAL
-        self._queue_name = queue_name or DEFAULT_QUEUE_NAME
+        self._queue_name = queue_name or PROCESSING_QUEUE_NAME
         self._rabbitmq = rabbitmq
         self._channel = self._rabbitmq.channel()
         self._channel.queue_declare(queue=self._queue_name)
