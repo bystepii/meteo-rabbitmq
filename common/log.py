@@ -50,11 +50,11 @@ def setup_logger(
             },
         },
         'loggers': {
-            '': {
+            k: {
                 'handlers': ['console_handler'],
                 'level': log_level,
                 'propagate': False
-            },
+            } for k in ['common', 'load_balancer', 'proxy', 'sensor', 'server', 'terminal']
         }
     }
     if filename is not os.devnull:
