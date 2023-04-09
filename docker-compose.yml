@@ -1,0 +1,65 @@
+services:
+  rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - server-network
+      - sensor-network
+      - default
+  proxy:
+    image: meteo/proxy
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+    environment:
+      - RABBITMQ_ADDRESS=rabbitmq:5672
+      - REDIS_ADDRESS=redis://redis:6379
+      - LOG_LEVEL=debug
+    networks:
+      - server-network
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - server-network
+  server:
+    image: meteo/server
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      - RABBITMQ_ADDRESS=rabbitmq:5672
+      - REDIS_ADDRESS=redis://redis:6379
+      - LOG_LEVEL=debug
+    networks:
+      - server-network
+  air-quality-sensor:
+    image: meteo/sensor
+    build:
+      context: .
+      dockerfile: sensor/Dockerfile
+    environment:
+      - SENSOR_TYPE=air_quality
+      - RABBITMQ_ADDRESS=rabbitmq:5672
+      - LOG_LEVEL=debug
+    networks:
+      - sensor-network
+  pollution-sensor:
+    image: meteo/sensor
+    build:
+      context: .
+      dockerfile: sensor/Dockerfile
+    environment:
+      - SENSOR_TYPE=pollution
+      - RABBITMQ_ADDRESS=rabbitmq:5672
+      - LOG_LEVEL=debug
+    networks:
+      - sensor-network
+networks:
+  server-network:
+    driver: bridge
+  sensor-network:
+    driver: bridge
