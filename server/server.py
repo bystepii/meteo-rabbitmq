@@ -125,7 +125,7 @@ class Server:
 
     def _on_message(
             self,
-            channel: BlockingConnection,
+            channel: Channel,
             method: Basic.Deliver,
             properties: BasicProperties,
             body: bytes
