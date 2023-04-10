@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass
-from json import JSONEncoder, JSONDecoder
+from json import JSONEncoder, JSONDecoder, JSONDecodeError
 
 
 @dataclass
@@ -20,13 +20,20 @@ class MeteoEncoder(JSONEncoder):
     def default(self, o):
         data = dataclasses.asdict(o)
         data['type'] = o.__class__.__name__
+        return data
 
 
 class MeteoDecoder(JSONDecoder):
     def decode(self, s, _w=object()):
         data = super().decode(s)
-        if data['type'] == 'RawMeteoData':
+        try:
+            data_type = data['type']
+        except (KeyError, TypeError):
+            raise JSONDecodeError("Missing type field", s, 0)
+        data.pop('type')
+        if data_type == 'RawMeteoData':
             return RawMeteoData(**data)
-        if data['type'] == 'RawPollutionData':
+        elif data_type == 'RawPollutionData':
             return RawPollutionData(**data)
-        raise ValueError(f"Unknown type {data['type']}")
+        else:
+            raise JSONDecodeError(f"Unknown type {data['type']}", s, 0)

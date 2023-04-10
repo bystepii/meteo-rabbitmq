@@ -62,7 +62,7 @@ class Sensor(ABC):
         self._channel.basic_publish(
             exchange='',
             routing_key=self._queue_name,
-            body=bytes(json.dumps(data, cls=MeteoEncoder), 'utf-8')
+            body=json.dumps(data, cls=MeteoEncoder).encode('utf-8')
         )
 
     def run(self):
