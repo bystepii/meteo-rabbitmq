@@ -50,6 +50,7 @@ class TumblingWindow:
                 pollution_data=pollution_data,
                 pollution_timestamp=pollution_timestamp,
             )
+            last_time = end
             self._send_results(results)
 
 
