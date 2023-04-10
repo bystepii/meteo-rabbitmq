@@ -16,6 +16,14 @@ class RawPollutionData:
     timestamp: float
 
 
+@dataclass
+class Results:
+    wellness_data: float
+    wellness_timestamp: float
+    pollution_data: float
+    pollution_timestamp: float
+
+
 class MeteoEncoder(JSONEncoder):
     def default(self, o):
         data = dataclasses.asdict(o)
@@ -35,5 +43,7 @@ class MeteoDecoder(JSONDecoder):
             return RawMeteoData(**data)
         elif data_type == 'RawPollutionData':
             return RawPollutionData(**data)
+        elif data_type == 'Results':
+            return Results(**data)
         else:
             raise JSONDecodeError(f"Unknown type {data['type']}", s, 0)
