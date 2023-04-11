@@ -34,8 +34,6 @@ class Terminal:
         self._max_results = max_results
         self._wellness_data: Deque[Tuple[str, float]] = deque(maxlen=max_results)
         self._pollution_data: Deque[Tuple[str, float]] = deque(maxlen=max_results)
-        self._animation = None
-        self._plot_process = None
         self._fig, (self._ax1, self._ax2) = plt.subplots(2)
 
     def receive_results(self, results: Results):
@@ -56,6 +54,8 @@ class Terminal:
         if len(self._pollution_data) > self._max_results:
             self._pollution_data.popleft()
 
+        self._update_plot()
+
     def _on_message(
             self,
             channel: Channel,
@@ -71,7 +71,6 @@ class Terminal:
             return
         if isinstance(raw_meteo_data, Results):
             self.receive_results(raw_meteo_data)
-            self._update_plot()
         else:
             logger.warning(f"Received unknown message {body}")
 
