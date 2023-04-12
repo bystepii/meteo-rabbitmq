@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import json
 import logging
 import random
-import json
 import time
 from abc import ABC, abstractmethod
 from enum import Enum

@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional
 
 from pika import BlockingConnection
 from redis import Redis
@@ -52,7 +52,6 @@ class TumblingWindow:
             )
             last_time = end
             self._send_results(results)
-
 
     def _send_results(self, results: Results):
         logger.debug(f"Sending results to exchange {self._exchange_name}")

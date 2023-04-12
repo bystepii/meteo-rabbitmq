@@ -42,6 +42,7 @@ class Server:
         self._consumer_tag: Optional[str] = None
         self._closing = False
         self._consuming = False
+        self._background_tasks = set()
 
     def run(self):
         logger.info("Starting server")
@@ -138,9 +139,13 @@ class Server:
             self._ack_message(method.delivery_tag)
             return
         if isinstance(raw_meteo_data, RawMeteoData):
-            asyncio.create_task(self._process_meteo_data(raw_meteo_data, method.delivery_tag))
+            task = asyncio.create_task(self._process_meteo_data(raw_meteo_data, method.delivery_tag))
+            self._background_tasks.add(task)
+            task.add_done_callback(self._background_tasks.discard)
         elif isinstance(raw_meteo_data, RawPollutionData):
-            asyncio.create_task(self._process_pollution_data(raw_meteo_data, method.delivery_tag))
+            task = asyncio.create_task(self._process_pollution_data(raw_meteo_data, method.delivery_tag))
+            self._background_tasks.add(task)
+            task.add_done_callback(self._background_tasks.discard)
         else:
             logger.warning(f"Received unknown message {body}")
 
