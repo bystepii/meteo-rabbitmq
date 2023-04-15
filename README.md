@@ -20,12 +20,12 @@ To run the system in the background, execute the following command in the root d
 By default, only one processing server instance is started and the two types of sensors.
 If you want to start more processing server instances, you can do so by executing the following command:
 
-    docker compose up -d --scale server=NUMBER_OF_INSTANCES
+    docker compose up -d --scale server=NUMBER_OF_INSTANCES server
 
 You can also start more sensors by executing the following commands
 
-    docker compose up -d --scale air-quality-sensor=NUMBER_OF_INSTANCES
-    docker compose up -d --scale pollution-sensor=NUMBER_OF_INSTANCES
+    docker compose up -d --scale air-quality-sensor=NUMBER_OF_INSTANCES air-quality-sensor
+    docker compose up -d --scale pollution-sensor=NUMBER_OF_INSTANCES pollution-sensor
 
 To check the current status of the system, execute the following command:
 
@@ -46,10 +46,13 @@ of the configuration is specified by environment variables, which are self-expla
 
 ### Terminal client
 
-To run the terminal client you must have Python 3.8 or higher installed on your machine. Install
-the required dependencies by executing the following command in the root directory of the project:
+**IMPORTANT: To run the terminal client you must have Python 3.10 or higher installed on your machine.
+`matplotlib` presents some issues with Python 3.9. You can ue [Anaconda](https://www.anaconda.com/) to
+install Python 3.10. This was tested with Python 3.11.2.**
 
-    pip install -r terminal/requirements.txt
+Install the required dependencies by executing the following command in the root directory of the project:
+
+    pip install -r terminal/requirements.txt --upgrade
 
 Finally, you can then run the terminal:
 
@@ -57,3 +60,29 @@ Finally, you can then run the terminal:
 
 The `amqp://localhost:5672` argument specifies the address of the RabbitMQ server. The `--debug` flag
 enables debug logging.
+
+### Redis
+
+The system uses Redis as a database. The data is stored in two sorted sets, one for the air quality
+data and one for the pollution data, `wellness` and `pollution`, respectively. You can view the
+data in the database by executing the following command:
+
+    redis-cli
+
+Or, if you have not installed the Redis CLI, you can use the Redis CLI in the Redis container:
+
+    docker container exec -it meteo-rabbitmq-redis-1 redis-cli
+
+Then you can execute the `zrange` command to view the data. For example, to view all the air quality
+data, execute the following command:
+
+    zrange wellness -inf +inf byscore withscores
+
+Instead of `wellness`, you can also use `pollution`. And instead of `-inf +inf`, you can specify
+initial and final timestamps in seconds.
+
+### RabbitMQ
+
+The system uses RabbitMQ as a message broker. You can view the messages in the queues by accessing
+the RabbitMQ management interface at http://localhost:15672. The default username and password are
+`guest` and `guest`, respectively.
