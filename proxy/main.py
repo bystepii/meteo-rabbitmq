@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 @click.option('--debug', is_flag=True, help="Enable debug logging")
 @click.option('--log-level', type=click.Choice(LOGGER_LEVEL_CHOICES),
               default=os.environ.get('LOG_LEVEL', 'info'), help="Set the log level")
-@click.option('--interval', type=int, help="Set the default tumbling window interval in ms")
+@click.option('--interval', type=int, default=os.environ.get("INTERVAL"),
+              help="Set the default tumbling window interval in ms")
 def main(
         rabbitmq_address: str,
         redis_address: str,
