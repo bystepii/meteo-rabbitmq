@@ -22,6 +22,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
+      - INTERVAL=2000
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
       - REDIS_ADDRESS=redis://redis:6379
       - LOG_LEVEL=debug
@@ -56,6 +57,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
+      - INTERVAL=1000
       - SENSOR_TYPE=air_quality
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
       - LOG_LEVEL=debug
@@ -70,6 +72,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
+      - INTERVAL=1000
       - SENSOR_TYPE=pollution
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
       - LOG_LEVEL=debug
